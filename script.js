@@ -424,3 +424,78 @@ renderCardStack();
 window.addEventListener("resize", () => {
   renderCardStack();
 });
+
+// --- LOADER LOGIC ---
+document.body.style.overflow = 'hidden'; // Prevent scroll during load
+
+function allAssetsLoaded(callback) {
+  // Wait for DOM, images, and video
+  const images = Array.from(document.images);
+  const videos = Array.from(document.querySelectorAll('video'));
+  let loaded = 0;
+  const total = images.length + videos.length;
+
+  if (total === 0) {
+    callback();
+    return;
+  }
+
+  function check() {
+    loaded++;
+    if (loaded >= total) callback();
+  }
+
+  images.forEach(img => {
+    if (img.complete) check();
+    else img.addEventListener('load', check, { once: true });
+    img.addEventListener('error', check, { once: true });
+  });
+
+  videos.forEach(video => {
+    if (video.readyState >= 3) check();
+    else video.addEventListener('loadeddata', check, { once: true });
+    video.addEventListener('error', check, { once: true });
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const loader = document.getElementById('loader-overlay');
+  const bar = loader.querySelector('.loader-bar');
+  const percent = loader.querySelector('.loader-percent');
+
+  // Animate progress to 100
+  let progress = { value: 0 };
+  gsap.to(progress, {
+    value: 100,
+    duration: 2.2,
+    ease: 'power1.inOut',
+    onUpdate: () => {
+      bar.style.width = `${progress.value}%`;
+      percent.textContent = `${Math.round(progress.value)}%`;
+    }
+  });
+
+  // Wait for all assets, then slide up loader
+  allAssetsLoaded(() => {
+    gsap.to(progress, {
+      value: 100,
+      duration: 0.5,
+      onUpdate: () => {
+        bar.style.width = `${progress.value}%`;
+        percent.textContent = `${Math.round(progress.value)}%`;
+      },
+      onComplete: () => {
+        gsap.to(loader, {
+          y: '-100%',
+          duration: 0.9,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            document.body.style.overflow = '';
+          }
+        });
+      }
+    });
+  });
+});
+

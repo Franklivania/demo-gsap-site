@@ -275,6 +275,10 @@ main {
   #main-display aside {
     max-width: 100%;
     margin: 0;
+
+    p {
+      font-size: 13.5px;
+    }
   }
   #vid {
     height: 30em;
@@ -287,6 +291,26 @@ main {
 
 .pg-container .text-container .reveal-text {
   font-size: 2em;
+}
+
+@media (max-width: 900px) {
+  .pg-container {
+    padding: 0 1em;
+    word-break: break-word;
+  }
+  .pg-container .text-container .reveal-text {
+    font-size: 1.5em;
+  }
+}
+
+@media (max-width: 600px) {
+  .pg-container {
+    padding: 0 0.25em;
+    word-break: break-word;
+  }
+  .pg-container .text-container .reveal-text {
+    font-size: 1em;
+  }
 }
 
 section {

@@ -1,11 +1,11 @@
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, Draggable);
 
+// --- HERO TEXT ANIMATION ---
 const heroText = document.querySelectorAll(
   "#hero-text, .hero-text, [data-hero-text]"
 );
 
-if (heroText) {
-  // Split the text into chars for animation
+if (heroText && heroText.length) {
   const split = new SplitText(heroText, { type: "chars,words" });
   gsap.from(split.chars, {
     scrollTrigger: {
@@ -21,6 +21,7 @@ if (heroText) {
   });
 }
 
+// --- REVEAL TEXT ANIMATION ---
 const revealText = document.querySelectorAll(".text-container .reveal-text");
 
 if (revealText.length) {
@@ -41,12 +42,10 @@ if (revealText.length) {
   });
 }
 
-// Animate .bright-text highlight only while scrolling
+// --- BRIGHT TEXT SCROLL HIGHLIGHT ---
 const brightTextPara = document.querySelector('.bright-text');
 if (brightTextPara) {
-  // Split into words
   const split = new SplitText(brightTextPara, { type: 'words' });
-  // Set initial faded color
   split.words.forEach(word => word.classList.add('highlight-fade'));
 
   gsap.to(split.words, {
@@ -54,7 +53,7 @@ if (brightTextPara) {
       trigger: brightTextPara,
       start: 'top 80%',
       end: 'bottom 20%',
-      scrub: true, // Animation tied to scroll position
+      scrub: true,
     },
     color: 'var(--color-white)',
     stagger: {
@@ -63,9 +62,8 @@ if (brightTextPara) {
     },
     ease: 'power2.out',
     onUpdate: function() {
-      // Remove faded class as words highlight
       split.words.forEach(word => {
-        if (window.getComputedStyle(word).color === 'rgb(242, 242, 242)') { // var(--color-white)
+        if (window.getComputedStyle(word).color === 'rgb(242, 242, 242)') {
           word.classList.remove('highlight-fade');
         }
       });
@@ -73,6 +71,7 @@ if (brightTextPara) {
   });
 }
 
+// --- TRAIL EFFECT (MOUSE & TOUCH) ---
 const content = [
   "./assets/images/one.svg",
   "./assets/images/two.svg",
@@ -84,7 +83,7 @@ const content = [
   "./assets/images/eight.svg"
 ];
 
-const container = document.querySelector("body");
+const container = document.body;
 
 let currentImageIndex = 0;
 let lastX = null;
@@ -109,6 +108,7 @@ function createTrail(x, y) {
     scale: 0,
     opacity: 0,
     rotation: gsap.utils.random(-20, 20),
+    pointerEvents: "none"
   });
 
   gsap.to(trail, {
@@ -130,7 +130,7 @@ function createTrail(x, y) {
   });
 }
 
-// Only add one mousemove listener, and fix typo
+// --- Mouse trail ---
 window.addEventListener("mousemove", (e) => {
   if (lastX === null || lastY === null) {
     lastX = e.clientX;
@@ -148,6 +148,34 @@ window.addEventListener("mousemove", (e) => {
     lastY = e.clientY;
   }
 });
+
+// --- Touch trail for mobile ---
+window.addEventListener("touchmove", (e) => {
+  if (!e.touches || e.touches.length === 0) return;
+  const touch = e.touches[0];
+  if (lastX === null || lastY === null) {
+    lastX = touch.clientX;
+    lastY = touch.clientY;
+    createTrail(touch.clientX, touch.clientY);
+    return;
+  }
+  const dx = touch.clientX - lastX;
+  const dy = touch.clientY - lastY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance > distanceThreshold) {
+    createTrail(touch.clientX, touch.clientY);
+    lastX = touch.clientX;
+    lastY = touch.clientY;
+  }
+}, { passive: true });
+
+window.addEventListener("touchend", () => {
+  lastX = null;
+  lastY = null;
+});
+
+// --- CARD STACK LOGIC ---
 
 const time_content = [
   {
@@ -177,8 +205,6 @@ const time_content = [
   }
 ];
 
-// --- CARD STACK LOGIC ---
-
 const cardsContainer = document.getElementById("cards-container");
 const addBtn = document.getElementById("add");
 const removeBtn = document.getElementById("remove");
@@ -189,7 +215,6 @@ cardWrapper.id = "card-stack";
 cardWrapper.style.position = "relative";
 cardWrapper.style.width = "100%";
 cardWrapper.style.height = "18em";
-// Insert cardWrapper before the #buttons div
 const buttonsDiv = document.getElementById("buttons");
 cardsContainer.insertBefore(cardWrapper, buttonsDiv);
 
@@ -208,13 +233,11 @@ function createCard(cardData) {
 
 function renderCardStack() {
   cardWrapper.innerHTML = "";
-  // Show up to 3 cards in the stack for effect
   const maxStack = Math.min(3, cardQueue.length);
   for (let i = 0; i < maxStack; i++) {
     const card = createCard(cardQueue[i]);
     card.classList.add("season-card");
     card.style.zIndex = 10 - i;
-    // Stacking effect: offset, scale, opacity
     if (i === 0) {
       card.style.pointerEvents = "auto";
       card.style.transform = "translateX(-50%) scale(1)";
@@ -245,7 +268,6 @@ function resetButtonGlow(btn) {
   });
 }
 function animateButtonCheck(btn) {
-  // Quick green flash
   gsap.to(btn, {
     background: "var(--color-green)",
     duration: 0.15,
@@ -276,13 +298,34 @@ function animateButtonShake(btn) {
   );
 }
 
+// --- DRAGGABLE LOGIC, OPTIMIZED FOR MOBILE ---
 function setupDraggable(card) {
   let dragDir = null;
-  Draggable.create(card, {
+  let dragThreshold = window.innerWidth < 600 ? 40 : 80; // Lower threshold for mobile
+  let isDragging = false;
+
+  // Remove any previous Draggable instance on this card
+  if (card._draggableInstance && typeof card._draggableInstance.kill === "function") {
+    card._draggableInstance.kill();
+  }
+
+  // Use touch-action CSS for better mobile drag
+  card.style.touchAction = "pan-y";
+
+  // Create Draggable
+  card._draggableInstance = Draggable.create(card, {
     type: "x",
     edgeResistance: 0.65,
     bounds: cardWrapper,
     inertia: true,
+    allowNativeTouchScrolling: false,
+    minimumMovement: 6,
+    onPress: function () {
+      isDragging = false;
+    },
+    onDragStart: function () {
+      isDragging = true;
+    },
     onDrag: function () {
       if (this.x > 0) {
         dragDir = "right";
@@ -300,12 +343,14 @@ function setupDraggable(card) {
     },
     onRelease: function () {
       card._lastDir = dragDir;
-      if (dragDir === "right" && this.x > 80) {
+      // Use a lower threshold for mobile screens
+      dragThreshold = window.innerWidth < 600 ? 40 : 80;
+      if (dragDir === "right" && this.x > dragThreshold) {
         animateButtonCheck(addBtn);
-        moveCardToBack();
-      } else if (dragDir === "left" && this.x < -80) {
+        moveCardToBack("right");
+      } else if (dragDir === "left" && this.x < -dragThreshold) {
         animateButtonShake(removeBtn);
-        moveCardToBack();
+        moveCardToBack("left");
       } else {
         gsap.to(card, {
           x: 0,
@@ -316,16 +361,32 @@ function setupDraggable(card) {
         resetButtonGlow(addBtn);
         resetButtonGlow(removeBtn);
       }
+      isDragging = false;
     },
-  });
+    onClick: function (e) {
+      // Prevent accidental click on card after drag on mobile
+      if (isDragging) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    cursor: "grab",
+    activeCursor: "grabbing"
+  })[0];
 }
 
-function moveCardToBack() {
-  // Animate top card out, then move first card to end, re-render
+// --- MOVE CARD TO BACK ---
+// Accepts direction: "right" or "left"
+function moveCardToBack(direction) {
   const topCard = cardWrapper.querySelector('.season-card');
   if (!topCard) return;
+  // If direction is not provided, fallback to last drag direction
+  let dir = direction;
+  if (!dir) {
+    dir = topCard._lastDir || "right";
+  }
   gsap.to(topCard, {
-    x: topCard._lastDir === 'right' ? window.innerWidth : -window.innerWidth,
+    x: dir === 'right' ? window.innerWidth : -window.innerWidth,
     opacity: 0,
     duration: 0.4,
     ease: "power2.in",
@@ -334,7 +395,6 @@ function moveCardToBack() {
       renderCardStack();
       resetButtonGlow(addBtn);
       resetButtonGlow(removeBtn);
-      // Animate new top card in
       const newTop = cardWrapper.querySelector('.season-card');
       if (newTop) {
         gsap.fromTo(newTop, { scale: 0.9, opacity: 0.7 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" });
@@ -343,5 +403,24 @@ function moveCardToBack() {
   });
 }
 
-// Initial render
+// --- BUTTON CLICK LOGIC ---
+addBtn.addEventListener("click", () => {
+  const topCard = cardWrapper.querySelector('.season-card');
+  if (!topCard) return;
+  animateButtonCheck(addBtn);
+  moveCardToBack("right");
+});
+removeBtn.addEventListener("click", () => {
+  const topCard = cardWrapper.querySelector('.season-card');
+  if (!topCard) return;
+  animateButtonShake(removeBtn);
+  moveCardToBack("left");
+});
+
+// --- INITIAL RENDER ---
 renderCardStack();
+
+// --- RESPONSIVE: Re-render card stack on resize for mobile drag threshold ---
+window.addEventListener("resize", () => {
+  renderCardStack();
+});

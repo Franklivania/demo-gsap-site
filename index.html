@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="container">
+    <main role="definition">
+      <div id="main-display">
+        <div class="text-container">
+          <h1 id="hero-text">It's Time</h1>
+        </div>
+        <aside>
+          <div class="text-container">
+            <p class="reveal-text">
+              What happens, when you take the time out to
+            </p>
+          </div>
+          <div class="text-container">
+            <p class="reveal-text">
+              see what you are actually missing.
+            </p>
+          </div>
+          <div class="text-container">
+            <p class="reveal-text">
+              It might not look like much, but... As the seasons pass,
+            </p>
+          </div>
+          <div class="text-container">
+            <p class="reveal-text">
+              we find ourselves wondering why we did not do that little thing.
+            </p>
+          </div>
+          <br>
+          <br>
+
+          <div class="text-container">
+            <p class="reveal-text">
+              We thought didn't matter...
+            </p>
+          </div>
+          <button type="button" id="explore">Explore</button>
+        </aside>
+      </div>
+      <div id="vid">
+        <video src="./assets/video/vid.mp4" autoplay loop></video>
+      </div>
+    </main>
+
+    <section>
+      <div class="pg-container">
+        <span class="text-container">
+          <p class="reveal-text">Think about it?</p>
+        </span><br>
+        <span class="text-container">
+          <p class="reveal-text">Summer, Winter Autumn, Spring -</p>
+        </span><br>
+        <span class="text-container">
+          <p class="reveal-text">In some places, Rainy and Dry seasons</p>
+        </span><br><br>
+        <span class="text-container">
+          <p class="reveal-text">All these times pass, come to an end, and leave us
+            focused on the wrong things.</p>
+        </span>
+      </div>
+
+      <section id="reflection">
+        <p class="bright-text">
+          So, How do we solve that?! <br>
+          What must we do, to ensure <br>
+          we always capture moments <br>
+          that mean so much to us!
+        </p>
+      </section>
+
+      <section id="cards-container">
+        
+        <div id="buttons">
+          <button type="button" id="remove">
+            <iconify-icon icon="clarity:close-line" width="36" height="36"></iconify-icon>
+          </button>
+          <button type="button" id="add">
+            <iconify-icon icon="heroicons-outline:plus" width="24" height="24"></iconify-icon>
+          </button>
+        </div>
+      </section>
+    </section>
+    <footer style="background: var(--color-blue-dark); color: var(--color-white); padding: 2em 0 1em 0; text-align: center; font-family: var(--font-montserrat); font-size: 1.1em; margin-top: 4em;">
+      <div style="max-width: 700px; margin: 0 auto;">
+        <p style="margin-bottom: 0.5em;">
+          <strong>Take the time.</strong> Cherish the seasons, the moments, and the people who matter. <br>
+          Life moves fast, but meaning is found in the pauses. <br>
+          <span style="color: var(--color-orange); font-weight: 600;">Make every moment count.</span>
+        </p>
+        <hr style="border: none; border-top: 1px solid var(--color-white); margin: 1.5em auto; width: 60%;">
+        <p style="font-size: 0.95em; color: #e0e0e0;">
+          &copy; <span id="year"></span> It's Time. Crafted with care by <a href="https://your-portfolio-link.com" style="color: var(--color-orange); text-decoration: none; font-weight: 500;">Your Name</a>.
+        </p>
+      </div>
+      <script>
+        // Set current year in footer
+        document.addEventListener('DOMContentLoaded', function() {
+          var y = document.getElementById('year');
+          if (y) y.textContent = new Date().getFullYear();
+        });
+      </script>
+    </footer>
+  </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"
+  integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollSmoother.min.js"
+  integrity="sha512-t4hwZimhnCKT3YLAsEcAcRDkngVFfCcUIfNLIjklrIZAZKD+GfQMP7HbRcsVHxNS48WRBSywNU1uSM2zzLQt1Q=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"
+  integrity="sha512-P2IDYZfqSwjcSjX0BKeNhwRUH8zRPGlgcWl5n6gBLzdi4Y5/0O4zaXrtO4K9TZK6Hn1BenYpKowuCavNandERg=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"
+  integrity="sha512-wOeEC+9qERAzhliwBFPDb6t8TiFFxdxG8vhK/Ygs7TuC44bpg8pg/X2/U/u+0X4fK05wb9id1EIipnF02+CFQw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"
+  integrity="sha512-dgqdovLK5r/NMiV5YfWA0xC94DKGrm+6q1OZpuWHm+uBGLTck6wu58WAX9lmy8wec6cVnsgxbPJ60DtmNFnfgg=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="./script.js"></script>
+
+</html>
